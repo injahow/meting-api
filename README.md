@@ -22,68 +22,9 @@ A powerful music API framework to accelerate your development
 ## Requirement
 PHP 5.4+ and BCMath, Curl, OpenSSL extension installed.
 
-## Installation
-Require this package, with [Composer](https://getcomposer.org), in the root directory of your project.
-
-```bash
-$ composer require metowolf/meting
-```
-
-Then you can import the class into your application:
-
-```php
-use Metowolf\Meting;
-
-$api = new Meting('netease');
-
-$data = $api->format(true)->search('Soldier');
-```
-
-> **Note:** Meting requires [BCMath](http://php.net/manual/en/book.bc.php), [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
-
-
-## Quick Start
-```php
-require 'vendor/autoload.php';
-// require 'Meting.php';
-
-use Metowolf\Meting;
-
-// Initialize to netease API
-$api = new Meting('netease');
-
-// Use custom cookie (option)
-// $api->cookie('paste your cookie');
-
-// Get data
-$data = $api->format(true)->search('Soldier', [
-    'page' => 1,
-    'limit' => 50
-]);
-
-echo $data;
-// [{"id":35847388,"name":"Hello","artist":["Adele"],"album":"Hello","pic_id":"1407374890649284","url_id":35847388,"lyric_id":35847388,"source":"netease"},{"id":33211676,"name":"Hello","artist":["OMFG"],"album":"Hello",...
-
-// Parse link
-$data = $api->format(true)->url(35847388);
-
-echo $data;
-// {"url":"http:\/\/...","size":4729252,"br":128}
-```
-
 ## More usage
  - [docs](https://github.com/metowolf/Meting/wiki)
  - [special for netease](https://github.com/metowolf/Meting/wiki/special-for-netease)
-
-## Join the Discussion
- - [Telegram Group](https://t.me/adplayer)
- - [Official website](https://i-meto.com)
-
-## Related Projects
- - [Hermit-X (Wordpress)](https://github.com/MoePlayer/Hermit-X)
- - [APlayer-Typecho](https://github.com/MoePlayer/APlayer-Typecho)
- - [MKOnlineMusicPlayer](https://github.com/mengkunsoft/MKOnlineMusicPlayer)
- - [WP-Player](https://github.com/webjyh/WP-Player)
 
 ## Author
 
