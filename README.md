@@ -13,9 +13,9 @@
 ## 项目说明
 - 这是基于[Meting](https://github.com/metowolf/Meting)创建的网易云API
 ## 项目测试
-https://api.injahow.cn/meting/?type=url&id=427139429
-https://api.injahow.cn/meting/?type=single&id=591321
-https://api.injahow.cn/meting/?type=playlist&id=2619366284
+- https://api.injahow.cn/meting/?type=url&id=427139429
+- https://api.injahow.cn/meting/?type=single&id=591321
+- https://api.injahow.cn/meting/?type=playlist&id=2619366284
 
 ## Requirement
 PHP 5.4+ and BCMath, Curl, OpenSSL extension installed.
