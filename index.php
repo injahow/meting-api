@@ -4,24 +4,24 @@ $id = $_GET['id'];
 ?>
 <?php if ($type=='' || $id==''){ ?>
 <!DOCTYPE HTML><html><meta http-equiv="Content-Type" content="text/html;charset=utf-8"/><head><link rel="shortcut icon" href="favicon.png"><title>163Music-API</title></head><body><h1>参数说明</h1>
-    type: 类型<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name 歌曲名<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;artist 歌手<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url 链接<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cover 封面<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lrc 歌词<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;single 获取以上所有信息(单曲)<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;playlist 获取以上所有信息(歌单)<br /><br />
-    id: 网易云单曲ID或网易云歌单ID<br /><br />
-    此API基于 <a href="https://github.com/metowolf/Meting" target="_blank">Meting</a> 构建。<br /><br />
-    例如：<a href="https://api.injahow.cn/meting/?type=url&id=427139429" target="_blank">https://api.injahow.cn/meting/?type=url&id=427139429</a><br />
-    <a href="https://api.injahow.cn/meting/?type=single&id=591321" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=single&id=591321</a><br />
-    <a href="https://api.injahow.cn/meting/?type=playlist&id=2619366284" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=playlist&id=2619366284</a>
-    </body></html>
+type: 类型<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name 歌曲名<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;artist 歌手<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url 链接<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cover 封面<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lrc 歌词<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;single 获取以上所有信息(单曲)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;playlist 获取以上所有信息(歌单)<br /><br />
+id: 网易云单曲ID或网易云歌单ID<br /><br />
+此API基于 <a href="https://github.com/metowolf/Meting" target="_blank">Meting</a> 构建。<br /><br />
+例如：<a href="https://api.injahow.cn/meting/?type=url&id=427139429" target="_blank">https://api.injahow.cn/meting/?type=url&id=427139429</a><br />
+<a href="https://api.injahow.cn/meting/?type=single&id=591321" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=single&id=591321</a><br />
+<a href="https://api.injahow.cn/meting/?type=playlist&id=2619366284" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=playlist&id=2619366284</a>
+</body></html>
 <?php exit;} ?>
 <?php
-header("Content-type: application/json; charset=UTF-8;");//定义头文件，防止乱码header('Content-type: text/json');
-header('Access-Control-Allow-Origin: https://injahow.com');
+header("Content-type: application/json; charset=UTF-8;");//数据格式
+header('Access-Control-Allow-Origin: https://injahow.com');//跨站请求
 header('Access-Control-Allow-Methods:GET');
 //header('Access-Control-Allow-Headers:x-requested-with,content-type');
 require 'vendor/autoload.php';
@@ -67,8 +67,7 @@ if ($type == 'playlist' ){
 		$url_id = $msg[0]->url_id;
 		//print_r($xxx);exit();
 		$m_url = json_decode($api->format(true)->url($url_id))->url;
-		//改https
-		if ($m_url[4] != 's') {
+		if ($m_url[4] != 's') {//改https
 			$m_url = str_replace("http","https", $m_url);
 		}
 		header("Location:$m_url");
