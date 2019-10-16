@@ -65,7 +65,7 @@ if ($type == 'playlist' ){
 		echo $artist;
 	} elseif ($type == 'url') {
 		$url_id = $msg[0]->url_id;
-		//print_r($xxx);exit();
+		//print_r($xxx);exit;
 		$m_url = json_decode($api->format(true)->url($url_id))->url;
 		//改https
 		if ($m_url[4] != 's') {
