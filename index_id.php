@@ -69,7 +69,7 @@ if ($type == 'playlist' ){
 		$cover = json_decode($api->format(true)->pic($pic_id))->url;
 		
 		$msg = array(
-			"id" => $last_id,
+			"id" => "$last_id",
 			"name"=>$name,
 			"artist"=>$artist,
 			"url"=>"https://api.injahow.cn/meting/?type=url&id=$url_id",
