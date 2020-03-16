@@ -36,8 +36,12 @@ header('Access-Control-Allow-Methods:GET');
 require 'vendor/autoload.php';
 use Metowolf\Meting;
 $api = new Meting('netease');
+$api->format(true);
+/* 添加会员MUSIC_U记录
+$api->cookie('os=pc; osver=Microsoft-Windows-10-Professional-build-10586-64bit; appver=2.0.3.131777; channel=netease; MUSIC_U=****** ; __remember_me=true');
+*/
 if ($type == 'playlist' ){
-	$data = $api->format(true)->playlist($id);
+	$data = $api->playlist($id);
 	if ($data=='[]') {echo 'ERROR'; exit;}
 	$data = json_decode($data);
 	$msgs = array();
@@ -50,7 +54,7 @@ if ($type == 'playlist' ){
 		$pic_id = $msg->pic_id;
 		$url_id = $msg->url_id;
 		$lyric_id = $msg->lyric_id;
-		$cover = json_decode($api->format(true)->pic($pic_id))->url;
+		$cover = json_decode($api->pic($pic_id))->url;
 		$msg = array(
 			"name" => $name,
 			"artist" => $artist,
@@ -62,7 +66,7 @@ if ($type == 'playlist' ){
 	}
 	echo json_encode($msgs);
 }else{
-	$msg = $api->format(true)->song($id);
+	$msg = $api->song($id);
 	//echo $msg;exit;
 	if ($msg == '[]') {echo 'ERROR'; exit;}
 	$msg = json_decode($msg);
@@ -75,17 +79,17 @@ if ($type == 'playlist' ){
 	} elseif ($type == 'url') {
 		$url_id = $msg[0]->url_id;
 		//print_r($xxx);exit;
-		$m_url = json_decode($api->format(true)->url($url_id))->url;
+		$m_url = json_decode($api->url($url_id))->url;
 		if ($m_url[4] != 's') {//改https
 			$m_url = str_replace('http', 'https', $m_url);
 		}
 		header("Location: $m_url");
 	} elseif ($type == 'cover') {
 		$pic_id = $msg[0]->pic_id;
-		echo json_decode($api->format(true)->pic($pic_id))->url;
+		echo json_decode($api->pic($pic_id))->url;
 	} elseif ($type == 'lrc') {
 		$lyric_id = $msg[0]->lyric_id;
-		$lrc = json_decode($api->format(true)->lyric($lyric_id))->lyric;
+		$lrc = json_decode($api->lyric($lyric_id))->lyric;
 		if ($lrc == '') {$lrc = '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';}	
 		echo $lrc;
 	} elseif ($type == 'single') {
@@ -94,7 +98,7 @@ if ($type == 'playlist' ){
 		$artist = implode("/",$artist_list);
 		$url_id = $msg[0]->url_id;
 		$pic_id = $msg[0]->pic_id;
-		$cover = json_decode($api->format(true)->pic($pic_id))->url;
+		$cover = json_decode($api->pic($pic_id))->url;
 		$lyric_id = $msg[0]->lyric_id;
 		$msg = array(
 			"name" => $name,
