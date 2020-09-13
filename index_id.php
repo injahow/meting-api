@@ -2,14 +2,16 @@
 $type = $_GET['type'];
 $id = $_GET['id'];
 ?>
-<?php if ($type == '' || $id == ''){ ?>
-<!DOCTYPE HTML>
-<html>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<?php if ($type == '' || $id == '') { ?>
+	<!DOCTYPE HTML>
+	<html>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
 	<head>
 		<link rel="shortcut icon" href="favicon.png">
 		<title>163Music-API</title>
 	</head>
+
 	<body>
 		<h1>参数说明</h1>
 		type: 类型<br />
@@ -26,35 +28,42 @@ $id = $_GET['id'];
 		<a href="https://api.injahow.cn/meting/?type=single&id=591321" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=single&id=591321</a><br />
 		<a href="https://api.injahow.cn/meting/?type=playlist&id=2619366284" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=playlist&id=2619366284</a>
 	</body>
-</html>
-<?php exit;} ?>
+
+	</html>
+<?php exit;
+} ?>
 <?php
-header('Content-type: application/json; charset=UTF-8;');//数据格式
+header('Content-type: application/json; charset=UTF-8;'); //数据格式
 //header('Access-Control-Allow-Origin: https://injahow.com');//跨站设置
 header('Access-Control-Allow-Methods:GET');
 //header('Access-Control-Allow-Headers:x-requested-with,content-type');
 require 'vendor/autoload.php';
+
 use Metowolf\Meting;
+
 $api = new Meting('netease');
 $api->format(true);
 
-if ($type == 'playlist' ){
+if ($type == 'playlist') {
 	$data = $api->playlist($id);
-	if ($data=='[]') {echo 'ERROR';exit;}
+	if ($data == '[]') {
+		echo 'ERROR';
+		exit;
+	}
 	$data = json_decode($data);
 	$msgs = array();
-	
+
 	$count_num = 0;
 	$last_id = count($data);
-	
+
 	$lastid = $_GET['lastid'];
 	$limit = $_GET['limit'];
-	
+
 	$lastid = $lastid == '' || $lastid == '0' ? $last_id : $lastid;
 	$limit = $limit == '' ? 10 : $limit;
 	//add
 	foreach ($data as $msg) {
-		
+
 		if ($last_id >= $lastid) {
 			--$last_id;
 			continue;
@@ -64,29 +73,32 @@ if ($type == 'playlist' ){
 		//echo $m_id;exit;
 		$name = $msg->name;
 		$artist_list = $msg->artist;
-		$artist = implode("/",$artist_list);
+		$artist = implode("/", $artist_list);
 		$pic_id = $msg->pic_id;
 		$url_id = $msg->url_id;
 		$lyric_id = $msg->lyric_id;
 		$cover = json_decode($api->pic($pic_id))->url;
-		
+
 		$msg = array(
 			"id" => "$last_id",
-			"name"=>$name,
-			"artist"=>$artist,
-			"url"=>"https://api.injahow.cn/meting/?type=url&id=$url_id",
-			"cover"=>$cover,
-			"lrc"=>"https://api.injahow.cn/meting/?type=lrc&id=$lyric_id",
+			"name" => $name,
+			"artist" => $artist,
+			"url" => "https://api.injahow.cn/meting/?type=url&id=$url_id",
+			"cover" => $cover,
+			"lrc" => "https://api.injahow.cn/meting/?type=lrc&id=$lyric_id",
 		);
 		--$last_id;
 		++$count_num;
 		array_push($msgs, $msg);
 	}
 	echo json_encode($msgs);
-}else{
+} else {
 	$msg = $api->song($id);
 	//echo $msg;exit;
-	if ($msg == '[]') {echo 'ERROR'; exit;}
+	if ($msg == '[]') {
+		echo 'ERROR';
+		exit;
+	}
 	$msg = json_decode($msg);
 	if ($type == 'name') {
 		echo $msg[0]->name;
@@ -98,7 +110,7 @@ if ($type == 'playlist' ){
 		$url_id = $msg[0]->url_id;
 		//print_r($xxx);exit;
 		$m_url = json_decode($api->url($url_id))->url;
-		if ($m_url[4] != 's') {//改https
+		if ($m_url[4] != 's') { //改https
 			$m_url = str_replace('http', 'https', $m_url);
 		}
 		header("Location: $m_url");
@@ -108,12 +120,14 @@ if ($type == 'playlist' ){
 	} elseif ($type == 'lrc') {
 		$lyric_id = $msg[0]->lyric_id;
 		$lrc = json_decode($api->lyric($lyric_id))->lyric;
-		if ($lrc == '') {$lrc = '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';}	
+		if ($lrc == '') {
+			$lrc = '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
+		}
 		echo $lrc;
 	} elseif ($type == 'single') {
 		$name = $msg[0]->name;
 		$artist_list = $msg[0]->artist;
-		$artist = implode("/",$artist_list);
+		$artist = implode("/", $artist_list);
 		$url_id = $msg[0]->url_id;
 		$pic_id = $msg[0]->pic_id;
 		$cover = json_decode($api->pic($pic_id))->url;
@@ -127,7 +141,7 @@ if ($type == 'playlist' ){
 		);
 		echo json_encode($msg);
 	} else {
-	echo 'ERROR';
+		echo 'ERROR';
 	}
 }
 ?>
