@@ -2,14 +2,6 @@
 <img src="https://user-images.githubusercontent.com/2666735/30651452-58ae6c88-9deb-11e7-9e13-6beae3f6c54c.png" alt="Meting">
 </p>
 
-<p align="center">
-<a href="https://i-meto.com"><img alt="Author" src="https://img.shields.io/badge/Author-METO-blue.svg?style=flat-square"/></a>
-<a href="https://packagist.org/packages/metowolf/Meting"><img alt="Version" src="https://img.shields.io/packagist/v/metowolf/Meting.svg?style=flat-square"/></a>
-<a href="https://packagist.org/packages/metowolf/meting/stats"><img alt="Downloads" src="https://img.shields.io/packagist/dt/metowolf/Meting.svg?style=flat-square"/></a>
-<a href="https://travis-ci.org/metowolf/Meting"><img alt="Travis" src="https://img.shields.io/travis/metowolf/Meting.svg?style=flat-square"></a>
-<img alt="License" src="https://img.shields.io/packagist/l/metowolf/Meting.svg?style=flat-square"/>
-</p>
-
 # meting
 
 ## 说明
