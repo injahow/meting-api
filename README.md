@@ -6,7 +6,7 @@
 
 ## 说明
 
-- 这是基于[Meting](https://github.com/metowolf/Meting)创建的网易云 API
+- 这是基于[Meting](https://github.com/metowolf/Meting)创建的Aplayer API
 - 灵感源于[https://api.fczbl.vip/163/](https://api.fczbl.vip/163/)
 
 ## 测试
