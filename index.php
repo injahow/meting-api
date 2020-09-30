@@ -67,11 +67,11 @@ if ($type == 'playlist') {
     $lyric_id = $msg->lyric_id;
     $cover = json_decode($api->pic($pic_id))->url;
     $msg = array(
-      "name" => $name,
+      "name"   => $name,
       "artist" => $artist,
-      "url" => "https://api.injahow.cn/meting/?type=url&id=$url_id",
-      "cover" => $cover,
-      "lrc" => "https://api.injahow.cn/meting/?type=lrc&id=$lyric_id"
+      "url"    => "https://api.injahow.cn/meting/?type=url&id=$url_id",
+      "cover"  => $cover,
+      "lrc"    => "https://api.injahow.cn/meting/?type=lrc&id=$lyric_id"
     );
     array_push($msgs, $msg);
   }
@@ -94,12 +94,11 @@ if ($type == 'playlist') {
     echo $artist;
   } elseif ($type == 'url') {
     $url_id = $msg[0]->url_id;
-    //print_r($xxx);exit;
     $m_url = json_decode($api->url($url_id))->url;
-    if ($m_url[4] != 's') { //改https
+    if ($m_url[4] != 's') { // 改https
       $m_url = str_replace('http', 'https', $m_url);
     }
-    header("Location: $m_url");
+    header('Location: ' . $m_url);
   } elseif ($type == 'cover') {
     $pic_id = $msg[0]->pic_id;
     echo json_decode($api->pic($pic_id))->url;
@@ -115,17 +114,17 @@ if ($type == 'playlist') {
   } elseif ($type == 'single') {
     $name = $msg[0]->name;
     $artist_list = $msg[0]->artist;
-    $artist = implode("/", $artist_list);
+    $artist = implode('/', $artist_list);
     $url_id = $msg[0]->url_id;
     $pic_id = $msg[0]->pic_id;
     $cover = json_decode($api->pic($pic_id))->url;
     $lyric_id = $msg[0]->lyric_id;
     $msg = array(
-      "name" => $name,
-      "artist" => $artist,
-      "url" => "https://api.injahow.cn/meting/?type=url&id=$url_id",
-      "cover" => $cover,
-      "lrc" => "https://api.injahow.cn/meting/?type=lrc&id=$lyric_id"
+      'name'   => $name,
+      'artist' => $artist,
+      'url'    => "https://api.injahow.cn/meting/?type=url&id=$url_id",
+      'cover'  => $cover,
+      'lrc'    => "https://api.injahow.cn/meting/?type=lrc&id=$lyric_id"
     );
     echo json_encode($msg);
   } else {
