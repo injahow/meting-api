@@ -4,16 +4,24 @@
 
 # meting-api
 
-## 说明
+## Descriptions
 
-- 这是基于[Meting](https://github.com/metowolf/Meting)创建的Aplayer API
+- 这是基于[Meting](https://github.com/metowolf/Meting)创建的 Aplayer API
 - 灵感源于[https://api.fczbl.vip/163/](https://api.fczbl.vip/163/)
 
-## 测试
+## Demo
 
 - [https://api.injahow.cn/meting/?type=url&id=427139429](https://api.injahow.cn/meting/?type=url&id=427139429)
 - [https://api.injahow.cn/meting/?type=single&id=591321](https://api.injahow.cn/meting/?type=single&id=591321)
 - [https://api.injahow.cn/meting/?type=playlist&id=2619366284](https://api.injahow.cn/meting/?type=playlist&id=2619366284)
+
+- [https://injahow.github.io/meting-api/](https://injahow.github.io/meting-api/)
+- [https://injahow.github.io/meting-api/?id=2619366284](https://injahow.github.io/meting-api/?id=2619366284)
+
+## Thanks
+
+- [Meting](https://github.com/metowolf/Meting)
+- [MetingJS](https://github.com/metowolf/MetingJS)
 
 ## Requirement
 
