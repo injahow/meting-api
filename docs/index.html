@@ -13,6 +13,9 @@
 </body>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<script>
+  const meting_api = 'https://api.injahow.cn/meting/index_cn.php?server=:server&type=:type&id=:id&auth=:auth&r=:r'
+</script>
 <script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
 <script>
   let playlist_id
@@ -25,7 +28,7 @@
     }
   }
   playlist_id = playlist_id || '2619366284'
-  const meting_api = 'https://api.injahow.cn/meting/index_cn.php?server=:server&type=:type&id=:id&auth=:auth&r=:r'
+
   const meting_js = document.getElementById('meting_js')
   meting_js.innerHTML = '<meting-js server="netease" type="playlist" id="' + playlist_id + '" order="list"></meting-js>'
 </script>
