@@ -1,4 +1,6 @@
 <?php
+$server = $_GET['server'];
+$server = $server==''?'netease':$server;
 $type = $_GET['type'];
 $id = $_GET['id'];
 ?>
@@ -43,7 +45,7 @@ require 'vendor/autoload.php';
 
 use Metowolf\Meting;
 
-$api = new Meting('netease');
+$api = new Meting($server);
 $api->format(true);
 /* 添加会员MUSIC_U记录
 $api->cookie('os=pc; osver=Microsoft-Windows-10-Professional-build-10586-64bit; appver=2.0.3.131777; channel=netease; MUSIC_U=****** ; __remember_me=true');
