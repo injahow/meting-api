@@ -77,7 +77,7 @@ if ($type == 'playlist') {
             'cover'  => $cover,
             'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
         );
-        array_push($playlist, $song);
+        $playlist[] = $song;
     }
     echo json_encode($playlist);
 } else {
@@ -120,6 +120,7 @@ if ($type == 'playlist') {
         $pic_id = $song->pic_id;
         $cover = json_decode($api->pic($pic_id))->url;
         $lyric_id = $song->lyric_id;
+        $source = $song->source;
         $msg = array(
             'name'   => $name,
             'artist' => $artist,
