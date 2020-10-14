@@ -1,6 +1,8 @@
 <?php
+// 设置API路径
 $API_URI = 'https://api.injahow.cn/meting/index_cn.php';
 
+$server = isset($_GET['server']) ? $_GET['server'] : 'netease';
 $type = isset($_GET['type']) ? $_GET['type'] : '';
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 
@@ -19,7 +21,7 @@ require 'vendor/autoload.php';
 
 use Metowolf\Meting;
 
-$api = new Meting('netease');
+$api = new Meting($server);
 $api->format(true);
 
 if ($type == 'playlist') {
@@ -29,50 +31,52 @@ if ($type == 'playlist') {
         exit;
     }
     $data = json_decode($data);
-    $msgs = array();
-    foreach ($data as $msg) {
-        $name = $msg->name;
-        $artist_list = $msg->artist;
-        $artist = implode('/', $artist_list);
-        $pic_id = $msg->pic_id;
-        $url_id = $msg->url_id;
-        $lyric_id = $msg->lyric_id;
+    $playlist = array();
+    foreach ($data as $song) {
+        $name = $song->name;
+        $artist = implode('/', $song->artist);
+        $pic_id = $song->pic_id;
+        $url_id = $song->url_id;
+        $lyric_id = $song->lyric_id;
         $cover = json_decode($api->pic($pic_id))->url;
-        $msg = array(
+        $source = $song->source;
+        $song = array(
             'name'   => $name,
             'artist' => $artist,
             'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $url_id,
             'cover'  => $cover,
             'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
         );
-        $msgs[] = $msg;
+        $playlist[] = $song;
     }
-    echo json_encode($msgs);
+    echo json_encode($playlist);
 } else {
-    $msg = $api->song($id);
-    if ($msg == '[]') {
+
+    $song = $api->song($id);
+
+    if ($song == '[]') {
         echo '[]';
         exit;
     }
-    $msg = json_decode($msg);
+
+    $song = json_decode($song)[0];
+
     if ($type == 'name') {
-        echo $msg[0]->name;
+        echo $song->name;
     } elseif ($type == 'artist') {
-        $artist_list = $msg[0]->artist;
-        $artist = implode('/', $artist_list);
-        echo $artist;
+        echo implode('/', $song->artist);
     } elseif ($type == 'url') {
-        $url_id = $msg[0]->url_id;
+        $url_id = $song->url_id;
         $m_url = json_decode($api->url($url_id))->url;
-        if ($m_url[4] != 's') {
+        if ($m_url[4] != 's') { // 改https
             $m_url = str_replace('http', 'https', $m_url);
         }
-        header('Location:' . $m_url);
+        header('Location: ' . $m_url);
     } elseif ($type == 'cover') {
-        $pic_id = $msg[0]->pic_id;
+        $pic_id = $song->pic_id;
         echo json_decode($api->pic($pic_id))->url;
     } elseif ($type == 'lrc') {
-        $lyric_id = $msg[0]->lyric_id;
+        $lyric_id = $song->lyric_id;
         $lrc_json = json_decode($api->lyric($lyric_id));
         $lrc = $lrc_json->lyric;
         if ($lrc == '') {
@@ -91,7 +95,7 @@ if ($type == 'playlist') {
         foreach ($lrc_arr as $i => $i_v) {
             $lrc_arr2[$i] = explode(']', $i_v);
             foreach ($lrc_cn_arr2 as $cn_i => $cn_v) {
-                if ($cn_v[0] == $lrc_arr2[$i][0] && $cn_v[1] != '') {
+                if ($cn_v[0] == $lrc_arr2[$i][0] && $cn_v[1] != '' && $cn_v[1] != '//') {
                     $lrc_arr[$i] .= '(' . $cn_v[1] . ')';
                     unset($lrc_cn_arr2[$cn_i]);
                 }
@@ -99,19 +103,19 @@ if ($type == 'playlist') {
         }
         echo implode("\n", $lrc_arr);
     } elseif ($type == 'single') {
-        $name = $msg[0]->name;
-        $artist_list = $msg[0]->artist;
-        $artist = implode('/', $artist_list);
-        $url_id = $msg[0]->url_id;
-        $pic_id = $msg[0]->pic_id;
+        $name = $song->name;
+        $artist = implode('/', $song->artist);
+        $url_id = $song->url_id;
+        $pic_id = $song->pic_id;
         $cover = json_decode($api->pic($pic_id))->url;
-        $lyric_id = $msg[0]->lyric_id;
+        $lyric_id = $song->lyric_id;
+        $source = $song->source;
         $msg = array(
             'name'   => $name,
             'artist' => $artist,
-            'url'    => 'https://api.injahow.cn/meting/index_cn.php?type=url&id=' . $url_id,
+            'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $url_id,
             'cover'  => $cover,
-            'lrc'    => 'https://api.injahow.cn/meting/index_cn.php?type=lrc&id=' . $lyric_id
+            'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
         );
         echo json_encode($msg);
     } else {
