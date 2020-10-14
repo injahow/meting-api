@@ -27,7 +27,7 @@ $api->format(true);
 if ($type == 'playlist') {
     $data = $api->playlist($id);
     if ($data == '[]') {
-        echo '[]';
+        echo 'ERROR';
         exit;
     }
     $data = json_decode($data);
@@ -40,14 +40,14 @@ if ($type == 'playlist') {
         $lyric_id = $song->lyric_id;
         $cover = json_decode($api->pic($pic_id))->url;
         $source = $song->source;
-        $song = array(
+
+        $playlist[] = array(
             'name'   => $name,
             'artist' => $artist,
             'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $url_id,
             'cover'  => $cover,
             'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
         );
-        $playlist[] = $song;
     }
     echo json_encode($playlist);
 } else {
@@ -55,7 +55,7 @@ if ($type == 'playlist') {
     $song = $api->song($id);
 
     if ($song == '[]') {
-        echo '[]';
+        echo 'ERROR';
         exit;
     }
 
@@ -119,6 +119,6 @@ if ($type == 'playlist') {
         );
         echo json_encode($msg);
     } else {
-        echo '[]';
+        echo 'ERROR';
     }
 }
