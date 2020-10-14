@@ -81,6 +81,7 @@ if ($type == 'playlist') {
         }
         /**
          * add lyric_cn
+         * ! "\n"
          */
         $lrc_arr = explode("\n", $lrc);
         $lrc_cn_arr = explode("\n", $lrc_json->tlyric);
