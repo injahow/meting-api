@@ -1,41 +1,19 @@
 <?php
-$type = $_GET['type'];
-$id = $_GET['id'];
-?>
-<?php if ($type == '' || $id == '') { ?>
-    <!DOCTYPE HTML>
-    <html>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+$API_URI = 'https://api.injahow.cn/meting/index_cn.php';
 
-    <head>
-        <link rel="shortcut icon" href="favicon.png">
-        <title>163Music-API</title>
-    </head>
+$type = isset($_GET['type']) ? $_GET['type'] : '';
+$id = isset($_GET['id']) ? $_GET['id'] : '';
 
-    <body>
-        <h1>参数说明</h1>
-        type: 类型<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name 歌曲名<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;artist 歌手<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url 链接<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cover 封面<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lrc 歌词<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;single 获取以上所有信息(单曲)<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;playlist 获取以上所有信息(歌单)<br /><br />
-        id: 网易云单曲ID或网易云歌单ID<br /><br />
-        此API基于 <a href="https://github.com/metowolf/Meting" target="_blank">Meting</a> 构建。<br /><br />
-        例如：<a href="https://api.injahow.cn/meting/?type=url&id=427139429" target="_blank">https://api.injahow.cn/meting/?type=url&id=427139429</a><br />
-        <a href="https://api.injahow.cn/meting/?type=single&id=591321" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=single&id=591321</a><br />
-        <a href="https://api.injahow.cn/meting/?type=playlist&id=2619366284" target="_blank" style="padding-left:48px">https://api.injahow.cn/meting/?type=playlist&id=2619366284</a>
-    </body>
+if ($type == '' || $id == '') {
+    include './public/index.html';
+    exit;
+}
 
-    </html>
-<?php exit;
-} ?>
-<?php
+// 数据格式
 header('Content-type: application/json; charset=UTF-8;');
-//header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods:GET');
+// 允许跨站
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
 
 require 'vendor/autoload.php';
 
@@ -47,7 +25,7 @@ $api->format(true);
 if ($type == 'playlist') {
     $data = $api->playlist($id);
     if ($data == '[]') {
-        echo 'ERROR';
+        echo '[]';
         exit;
     }
     $data = json_decode($data);
@@ -63,9 +41,9 @@ if ($type == 'playlist') {
         $msg = array(
             'name'   => $name,
             'artist' => $artist,
-            'url'    => "https://api.injahow.cn/meting/index_cn.php?type=url&id=$url_id",
+            'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $url_id,
             'cover'  => $cover,
-            'lrc'    => "https://api.injahow.cn/meting/index_cn.php?type=lrc&id=$lyric_id"
+            'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
         );
         $msgs[] = $msg;
     }
@@ -73,7 +51,7 @@ if ($type == 'playlist') {
 } else {
     $msg = $api->song($id);
     if ($msg == '[]') {
-        echo 'ERROR';
+        echo '[]';
         exit;
     }
     $msg = json_decode($msg);
@@ -101,24 +79,24 @@ if ($type == 'playlist') {
             echo '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
             exit;
         }
-        $lrc_arr = explode('\n', $lrc);
         /**
          * add lyric_cn
          */
-        $lrc_cn_arr = explode('\n', $lrc_json->tlyric);
-        foreach ($lrc_cn_arr as $i => $i_value) {
-            $lrc_cn_2arr[$i] = explode(']', $i_value);
+        $lrc_arr = explode("\n", $lrc);
+        $lrc_cn_arr = explode("\n", $lrc_json->tlyric);
+        foreach ($lrc_cn_arr as $k => $v) {
+            $lrc_cn_arr2[$k] = explode(']', $v);
         }
-        foreach ($lrc_arr as $i => $i_value) {
-            $lrc_2arr[$i] = explode(']', $i_value);
-            foreach ($lrc_cn_2arr as $ii => $ii_value) {
-                if ($ii_value[0] == $lrc_2arr[$i][0] && $ii_value[1] != '') {
-                    $lrc_arr[$i] .= '(' . $ii_value[1] . ')';
-                    unset($lrc_cn_2arr[$ii]);
+        foreach ($lrc_arr as $i => $i_v) {
+            $lrc_arr2[$i] = explode(']', $i_v);
+            foreach ($lrc_cn_arr2 as $cn_i => $cn_v) {
+                if ($cn_v[0] == $lrc_arr2[$i][0] && $cn_v[1] != '') {
+                    $lrc_arr[$i] .= '(' . $cn_v[1] . ')';
+                    unset($lrc_cn_arr2[$cn_i]);
                 }
             }
         }
-        echo implode('\n', $lrc_arr);
+        echo implode("\n", $lrc_arr);
     } elseif ($type == 'single') {
         $name = $msg[0]->name;
         $artist_list = $msg[0]->artist;
@@ -130,13 +108,12 @@ if ($type == 'playlist') {
         $msg = array(
             'name'   => $name,
             'artist' => $artist,
-            'url'    => "https://api.injahow.cn/meting/index_cn.php?type=url&id=$url_id",
+            'url'    => 'https://api.injahow.cn/meting/index_cn.php?type=url&id=' . $url_id,
             'cover'  => $cover,
-            'lrc'    => "https://api.injahow.cn/meting/index_cn.php?type=lrc&id=$lyric_id"
+            'lrc'    => 'https://api.injahow.cn/meting/index_cn.php?type=lrc&id=' . $lyric_id
         );
         echo json_encode($msg);
     } else {
-        echo 'ERROR';
+        echo '[]';
     }
 }
-?>
