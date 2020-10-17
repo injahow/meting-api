@@ -2,14 +2,14 @@
 // 设置API路径
 $API_URI = 'https://api.injahow.cn/meting/index_cn.php';
 
-$server = isset($_GET['server']) ? $_GET['server'] : 'netease';
-$type = isset($_GET['type']) ? $_GET['type'] : '';
-$id = isset($_GET['id']) ? $_GET['id'] : '';
-
-if ($type == '' || $id == '') {
+if (!isset($_GET['type']) || !isset($_GET['id'])) {
     include './public/index.html';
     exit;
 }
+
+$server = isset($_GET['server']) ? $_GET['server'] : 'netease';
+$type =  $_GET['type'];
+$id =  $_GET['id'];
 
 // 数据格式
 header('Content-type: application/json; charset=UTF-8;');
@@ -27,103 +27,95 @@ $api->format(true);
 if ($type == 'playlist') {
     $data = $api->playlist($id);
     if ($data == '[]') {
-        echo 'ERROR';
+        echo '{"error":"unknown id"}';
         exit;
     }
     $data = json_decode($data);
     $playlist = array();
     foreach ($data as $song) {
-        $name = $song->name;
-        $artist = implode('/', $song->artist);
-        $pic_id = $song->pic_id;
-        $url_id = $song->url_id;
-        $lyric_id = $song->lyric_id;
-        $cover = json_decode($api->pic($pic_id))->url;
-        $source = $song->source;
-
         $playlist[] = array(
-            'name'   => $name,
-            'artist' => $artist,
-            'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $url_id,
-            'cover'  => $cover,
-            'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
+            'name'   => $song->name,
+            'artist' => implode('/', $song->artist),
+            'url'    => $API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
+            'cover'  => json_decode($api->pic($song->pic_id))->url,
+            'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
         );
     }
     echo json_encode($playlist);
 } else {
 
     $song = $api->song($id);
-
     if ($song == '[]') {
-        echo 'ERROR';
+        echo '{"error":"unknown id"}';
         exit;
     }
 
     $song = json_decode($song)[0];
 
-    if ($type == 'name') {
-        echo $song->name;
-    } elseif ($type == 'artist') {
-        echo implode('/', $song->artist);
-    } elseif ($type == 'url') {
-        $url_id = $song->url_id;
-        $m_url = json_decode($api->url($url_id))->url;
-        if ($m_url[4] != 's') { // 改https
-            $m_url = str_replace('http', 'https', $m_url);
-        }
-        header('Location: ' . $m_url);
-    } elseif ($type == 'cover') {
-        $pic_id = $song->pic_id;
-        echo json_decode($api->pic($pic_id))->url;
-    } elseif ($type == 'lrc') {
-        $lyric_id = $song->lyric_id;
-        $lrc_json = json_decode($api->lyric($lyric_id));
-        $lrc = $lrc_json->lyric;
-        if ($lrc == '') {
-            echo '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
-            exit;
-        }
-        $lrc_cn = $lrc_json->tlyric;
-        if ($lrc_cn == '') {
-            echo $lrc;
-            exit;
-        }
-        /**
-         * add lyric_cn
-         * ! "\n"
-         */
-        $lrc_arr = explode("\n", $lrc);
-        $lrc_cn_arr = explode("\n", $lrc_cn);
-        foreach ($lrc_cn_arr as $k => $v) {
-            $lrc_cn_arr2[$k] = explode(']', $v);
-        }
-        foreach ($lrc_arr as $i => $i_v) {
-            $lrc_arr2[$i] = explode(']', $i_v);
-            foreach ($lrc_cn_arr2 as $cn_i => $cn_v) {
-                if ($cn_v[0] == $lrc_arr2[$i][0] && $cn_v[1] != '' && $cn_v[1] != '//') {
-                    $lrc_arr[$i] .= '(' . $cn_v[1] . ')';
-                    unset($lrc_cn_arr2[$cn_i]);
+    switch ($type) {
+        case 'name':
+            echo $song->name;
+            break;
+
+        case 'artist':
+            echo implode('/', $song->artist);
+            break;
+
+        case 'url':
+            $m_url = json_decode($api->url($song->url_id))->url;
+            if ($m_url[4] != 's') { // 改https
+                $m_url = str_replace('http', 'https', $m_url);
+            }
+            header('Location: ' . $m_url);
+            break;
+
+        case 'cover':
+            echo json_decode($api->pic($song->pic_id))->url;
+            break;
+
+        case 'lrc':
+            $lrc_data = json_decode($api->lyric($song->lyric_id));
+            if ($lrc_data->lyric == '') {
+                echo '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
+                exit;
+            }
+            if ($lrc_data->tlyric == '') {
+                echo $lrc_data->lyric;
+                exit;
+            }
+            /**
+             * add lyric_cn
+             * ! "\n"
+             */
+            $lrc_arr = explode("\n", $lrc_data->lyric);
+            $lrc_cn_arr = explode("\n", $lrc_data->tlyric);
+            foreach ($lrc_cn_arr as $k => $v) {
+                $lrc_cn_arr2[$k] = explode(']', $v);
+            }
+            foreach ($lrc_arr as $i => $i_v) {
+                $lrc_arr2[$i] = explode(']', $i_v);
+                foreach ($lrc_cn_arr2 as $cn_i => $cn_v) {
+                    if ($cn_v[0] == $lrc_arr2[$i][0] && $cn_v[1] != '' && $cn_v[1] != '//') {
+                        $lrc_arr[$i] .= '(' . $cn_v[1] . ')';
+                        unset($lrc_cn_arr2[$cn_i]);
+                    }
                 }
             }
-        }
-        echo implode("\n", $lrc_arr);
-    } elseif ($type == 'single') {
-        $name = $song->name;
-        $artist = implode('/', $song->artist);
-        $url_id = $song->url_id;
-        $pic_id = $song->pic_id;
-        $cover = json_decode($api->pic($pic_id))->url;
-        $lyric_id = $song->lyric_id;
-        $source = $song->source;
-        $msg = array(
-            'name'   => $name,
-            'artist' => $artist,
-            'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $url_id,
-            'cover'  => $cover,
-            'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
-        );
-        echo json_encode($msg);
-    } else {
-        echo 'ERROR';
+            echo implode("\n", $lrc_arr);
+            break;
+
+        case 'single':
+            $msg = array(
+                'name'   => $song->name,
+                'artist' => implode('/', $song->artist),
+                'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $song->url_id,
+                'cover'  => json_decode($api->pic($song->pic_id))->url,
+                'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+            );
+            echo json_encode($msg);
+            break;
+
+        default:
+            echo '{"error":"unknown type"}';
     }
 }

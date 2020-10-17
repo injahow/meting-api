@@ -1,14 +1,14 @@
 <?php
 $API_URI = 'https://api.injahow.cn/meting/';
 
-$server = isset($_GET['server']) ? $_GET['server'] : 'netease';
-$type = isset($_GET['type']) ? $_GET['type'] : '';
-$id = isset($_GET['id']) ? $_GET['id'] : '';
-
-if ($type == '' || $id == '') {
+if (!isset($_GET['type']) || !isset($_GET['id'])) {
     include './public/index.html';
     exit;
 }
+
+$server = isset($_GET['server']) ? $_GET['server'] : 'netease';
+$type =  $_GET['type'];
+$id =  $_GET['id'];
 
 // 数据格式
 header('Content-type: application/json; charset=UTF-8;');
@@ -28,11 +28,10 @@ if ($type == 'playlist') {
     $data = $api->playlist($id);
 
     if ($data == '[]') {
-        echo 'ERROR';
+        echo '{"error":"unknown id"}';
         exit;
     }
     $data = json_decode($data);
-
 
     $count_num = 0;
     $last_id = count($data);
@@ -51,19 +50,13 @@ if ($type == 'playlist') {
             continue;
         }
         if ($count_num == $limit) break;
-        $m_id = $song->id;
-        $name = $song->name;
-        $artist_list = $song->artist;
-        $artist = implode('/', $artist_list);
-        $pic_id = $song->pic_id;
-        $cover = json_decode($api->pic($pic_id))->url;
 
         $playlist[] = array(
             'id'     => $last_id,
-            'mid'    => $m_id,
-            'name'   => $name,
-            'artist' => $artist,
-            'cover'  => $cover
+            'mid'    => $song->id,
+            'name'   => $song->name,
+            'artist' =>  implode('/', $song->artist),
+            'cover'  => json_decode($api->pic($song->pic_id))->url
         );
         --$last_id;
         ++$count_num;
@@ -74,7 +67,7 @@ if ($type == 'playlist') {
     $search_msg = $_GET['data'];
     $data = $api->search($search_msg);
     if ($data == '[]') {
-        echo 'ERROR';
+        echo '[]';
         exit;
     }
     $data = json_decode($data);
@@ -98,19 +91,13 @@ if ($type == 'playlist') {
             continue;
         }
         if ($count_num == $limit) break;
-        $m_id = $msg->id;
-        $name = $msg->name;
-        $artist_list = $msg->artist;
-        $artist = implode('/', $artist_list);
-        $pic_id = $msg->pic_id;
-        $cover = json_decode($api->pic($pic_id))->url;
 
         $searchlist[] = array(
             'id'     => $last_id,
-            'mid'    => $m_id,
-            'name'   => $name,
-            'artist' => $artist,
-            'cover'  => $cover
+            'mid'    => $msg->id,
+            'name'   => $msg->name,
+            'artist' => implode('/', $msg->artist),
+            'cover'  => json_decode($api->pic($msg->pic_id))->url
         );
 
         --$last_id;
@@ -121,54 +108,54 @@ if ($type == 'playlist') {
     $song = $api->song($id);
 
     if ($song == '[]') {
-        echo 'ERROR';
+        echo '{"error":"unknown id"}';
         exit;
     }
     $song = json_decode($song)[0];
-    if ($type == 'name') {
-        echo $song->name;
-    } elseif ($type == 'artist') {
-        $artist = implode('/', $song->artist);
-        echo $artist;
-    } elseif ($type == 'url') {
-        $url_id = $song->url_id;
-        $m_url = json_decode($api->url($url_id))->url;
-        if ($m_url[4] != 's') {
-            $m_url = str_replace('http', 'https', $m_url);
-        }
-        header('Location: ' . $m_url);
-    } elseif ($type == 'cover') {
-        $pic_id = $song->pic_id;
-        echo json_decode($api->pic($pic_id))->url;
-    } elseif ($type == 'lrc') {
-        $lyric_id = $song->lyric_id;
-        $lrc = json_decode($api->lyric($lyric_id))->lyric;
-        if ($lrc == '') {
-            $lrc = '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
-        }
-        echo $lrc;
-    } elseif ($type == 'single') {
-        $name = $song->name;
-        $artist_list = $song->artist;
-        $artist = implode('/', $artist_list);
-        $url_id = $song->url_id;
-        $pic_id = $song->pic_id;
-        $cover = json_decode($api->pic($pic_id))->url;
-        $lyric_id = $song->lyric_id;
-        $source = $song->source;
-        // 播放页面设置时间
-        $dt = json_decode($api->format(false)->song($id))->songs[0]->dt;
 
-        $msg = array(
-            'name'   => $name,
-            'artist' => $artist,
-            'dt'     => $dt,
-            'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $url_id,
-            'cover'  => $cover,
-            'lrc'    => $API_URI . '?server=' . $source . '&type=lrc&id=' . $lyric_id
-        );
-        echo json_encode($msg);
-    } else {
-        echo 'ERROR';
+    switch ($type) {
+        case 'name':
+            echo $song->name;
+            break;
+
+        case 'artist':
+            echo implode('/', $song->artist);
+            break;
+
+        case 'url':
+            $m_url = json_decode($api->url($song->url_id))->url;
+            if ($m_url[4] != 's') { // 改https
+                $m_url = str_replace('http', 'https', $m_url);
+            }
+            header('Location: ' . $m_url);
+            break;
+
+        case 'cover':
+            echo json_decode($api->pic($song->pic_id))->url;
+            break;
+
+        case 'lrc':
+            $lrc = json_decode($api->lyric($song->lyric_id))->lyric;
+            if ($lrc == '') {
+                $lrc = '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
+            }
+            echo $lrc;
+            break;
+
+        case 'single':
+            // dt:播放页面需要时间
+            $msg = array(
+                'name'   => $song->name,
+                'artist' => implode('/', $song->artist),
+                'dt'     => json_decode($api->format(false)->song($id))->songs[0]->dt,
+                'url'    => $API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
+                'cover'  => json_decode($api->pic($song->pic_id))->url,
+                'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+            );
+            echo json_encode($msg);
+            break;
+
+        default:
+            echo '{"error":"unknown type"}';
     }
 }
