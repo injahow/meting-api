@@ -83,12 +83,17 @@ if ($type == 'playlist') {
             echo '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
             exit;
         }
+        $lrc_cn = $lrc_json->tlyric;
+        if ($lrc_cn == '') {
+            echo $lrc;
+            exit;
+        }
         /**
          * add lyric_cn
          * ! "\n"
          */
         $lrc_arr = explode("\n", $lrc);
-        $lrc_cn_arr = explode("\n", $lrc_json->tlyric);
+        $lrc_cn_arr = explode("\n", $lrc_cn);
         foreach ($lrc_cn_arr as $k => $v) {
             $lrc_cn_arr2[$k] = explode(']', $v);
         }
