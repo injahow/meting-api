@@ -65,4 +65,4 @@ PHP 5.4+ and BCMath, Curl, OpenSSL extension installed.
 
 [MIT](https://github.com/injahow/vue-admin-anihub/blob/master/LICENSE) license.
 
-Copyright (c) 2020 injahow
+Copyright (c) 2019 injahow
