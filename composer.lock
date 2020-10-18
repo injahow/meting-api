@@ -1,0 +1,61 @@
+{
+  "_readme": [
+    "This file locks the dependencies of your project to a known state",
+    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+    "This file is @generated automatically"
+  ],
+  "content-hash": "70ff81c59564e9617fed0bf28f62fad1",
+  "packages": [
+    {
+      "name": "metowolf/meting",
+      "version": "v1.5.7",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/metowolf/Meting.git",
+        "reference": "54178aa112da5db09f487d862d7ae62cbf7bc060"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/metowolf/Meting/zipball/54178aa112da5db09f487d862d7ae62cbf7bc060",
+        "reference": "54178aa112da5db09f487d862d7ae62cbf7bc060",
+        "shasum": ""
+      },
+      "require": {
+        "ext-curl": "*",
+        "ext-openssl": "*",
+        "php": ">=5.4.0"
+      },
+      "suggest": {
+        "ext-bcmath": "Required to use BC Math calculate RSA.",
+        "ext-openssl": "Required to use OpenSSL encrypt params."
+      },
+      "type": "library",
+      "autoload": {
+        "psr-4": {
+          "Metowolf\\": "src/"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": ["MIT"],
+      "authors": [
+        {
+          "name": "metowolf",
+          "email": "i@i-meto.com",
+          "homepage": "https://i-meto.com"
+        }
+      ],
+      "description": "A powerful music API framework to accelerate development.",
+      "homepage": "https://github.com/metowolf/Meting",
+      "keywords": ["lightweight", "lighty", "music api", "php music"],
+      "time": "2019-06-16T05:55:00+00:00"
+    }
+  ],
+  "packages-dev": [],
+  "aliases": [],
+  "minimum-stability": "stable",
+  "stability-flags": [],
+  "prefer-stable": false,
+  "prefer-lowest": false,
+  "platform": [],
+  "platform-dev": []
+}

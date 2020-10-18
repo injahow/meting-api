@@ -9,11 +9,41 @@
 - 这是基于[Meting](https://github.com/metowolf/Meting)创建的 APlayer API
 - 灵感源于[https://api.fczbl.vip/163/](https://api.fczbl.vip/163/)
 
+## Build Setup
+
+```bash
+# 克隆仓库
+git clone https://github.com/injahow/meting-api.git
+
+cd meting-api
+
+# 安装依赖
+composer install
+
+# 或者使用中国镜像
+composer config -g repo.packagist composer https://packagist.phpcomposer.com
+
+composer install
+```
+
+修改代码参数
+
+```php
+<?php
+// 设置API路径
+$API_URI='你的api访问路径';
+// ...
+```
+
 ## Demo
+
+API-Demo:
 
 - [https://api.injahow.cn/meting/?type=url&id=427139429](https://api.injahow.cn/meting/?type=url&id=427139429)
 - [https://api.injahow.cn/meting/?type=single&id=591321](https://api.injahow.cn/meting/?type=single&id=591321)
 - [https://api.injahow.cn/meting/?type=playlist&id=2619366284](https://api.injahow.cn/meting/?type=playlist&id=2619366284)
+
+APlayer-Demo:
 
 - [https://injahow.github.io/meting-api/](https://injahow.github.io/meting-api/)
 - [https://injahow.github.io/meting-api/?id=2904749230](https://injahow.github.io/meting-api/?id=2904749230)
@@ -28,7 +58,8 @@
 
 PHP 5.4+ and BCMath, Curl, OpenSSL extension installed.
 
-## More usage
+## License
 
-- [docs](https://github.com/metowolf/Meting/wiki)
-- [special for netease](https://github.com/metowolf/Meting/wiki/special-for-netease)
+[MIT](https://github.com/injahow/vue-admin-anihub/blob/master/LICENSE) license.
+
+Copyright (c) 2020 injahow
