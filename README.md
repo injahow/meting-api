@@ -26,6 +26,9 @@ composer config -g repo.packagist composer https://packagist.phpcomposer.com
 composer install
 ```
 
+建议直接访问发布页面下载打包文件
+[https://github.com/injahow/meting-api/releases](https://github.com/injahow/meting-api/releases)
+
 修改代码参数
 
 ```php
