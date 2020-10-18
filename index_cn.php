@@ -3,7 +3,7 @@
 $API_URI = 'https://api.injahow.cn/meting/index_cn.php';
 
 if (!isset($_GET['type']) || !isset($_GET['id'])) {
-    include './public/index.html';
+    include __DIR__ . '/public/index.html';
     exit;
 }
 
@@ -17,7 +17,7 @@ header('Content-type: application/json; charset=UTF-8;');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 
-require 'vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use Metowolf\Meting;
 
