@@ -1,5 +1,5 @@
 <?php
-$API_URI = 'https://api.injahow.cn/meting/';
+define('API_URI', 'https://api.injahow.cn/meting/');
 
 if (!isset($_GET['type']) || !isset($_GET['id'])) {
     include __DIR__ . '/public/index.html';
@@ -148,9 +148,9 @@ if ($type == 'playlist') {
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
                 'dt'     => json_decode($api->format(false)->song($id))->songs[0]->dt,
-                'url'    => $API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
+                'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
                 'cover'  => json_decode($api->pic($song->pic_id))->url,
-                'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
             );
             echo json_encode($msg);
             break;

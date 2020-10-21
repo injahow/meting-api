@@ -34,7 +34,7 @@ composer install
 ```php
 <?php
 // 设置API路径
-$API_URI='你的api访问路径';
+define('API_URI', '你的api访问路径');
 // ...
 ```
 

@@ -1,6 +1,6 @@
 <?php
 // 设置API路径
-$API_URI = 'https://api.injahow.cn/meting/index_cn.php';
+define('API_URI', 'https://api.injahow.cn/meting/index_cn.php');
 
 if (!isset($_GET['type']) || !isset($_GET['id'])) {
     include __DIR__ . '/public/index.html';
@@ -36,9 +36,9 @@ if ($type == 'playlist') {
         $playlist[] = array(
             'name'   => $song->name,
             'artist' => implode('/', $song->artist),
-            'url'    => $API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
+            'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
             'cover'  => json_decode($api->pic($song->pic_id))->url,
-            'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
         );
     }
     echo json_encode($playlist);
@@ -108,9 +108,9 @@ if ($type == 'playlist') {
             $msg = array(
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
-                'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $song->url_id,
+                'url'    => API_URI . '?server=' . $source . '&type=url&id=' . $song->url_id,
                 'cover'  => json_decode($api->pic($song->pic_id))->url,
-                'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
             );
             echo json_encode($msg);
             break;

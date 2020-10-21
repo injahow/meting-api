@@ -1,6 +1,9 @@
 <?php
 // 设置API路径
-$API_URI = 'https://api.injahow.cn/meting/';
+define('API_URI', 'https://api.injahow.cn/meting/');
+// 设置缓存及时间
+define('CACHE', true);
+define('CACHE_TIME', 86400); //86400s = 1 day
 
 if (!isset($_GET['type']) || !isset($_GET['id'])) {
     include __DIR__ . '/public/index.html';
@@ -31,6 +34,19 @@ if ($server == 'netease') {
 }*/
 
 if ($type == 'playlist') {
+
+    // 设置缓存
+    if (CACHE) {
+        $file_name = __DIR__ . '/cache/playlist/' . $server . '_' . $id . '.json';
+        if (file_exists($file_name)) {
+            // < 1 day
+            if ($_SERVER['REQUEST_TIME'] - filectime($file_name) < CACHE_TIME) {
+                echo file_get_contents($file_name);
+                exit;
+            }
+        }
+    }
+
     $data = $api->playlist($id);
     if ($data == '[]') {
         echo '{"error":"unknown id"}';
@@ -42,12 +58,18 @@ if ($type == 'playlist') {
         $playlist[] = array(
             'name'   => $song->name,
             'artist' => implode('/', $song->artist),
-            'url'    => $API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
+            'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
             'cover'  => json_decode($api->pic($song->pic_id))->url,
-            'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
         );
     }
-    echo json_encode($playlist);
+    $playlist = json_encode($playlist);
+    // 设置缓存
+    if (CACHE) {
+        // ! mkdir /cache/playlist
+        file_put_contents($file_name, $playlist);
+    }
+    echo $playlist;
 } else {
 
     $song = $api->song($id);
@@ -91,9 +113,9 @@ if ($type == 'playlist') {
             $msg = array(
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
-                'url'    => $API_URI . '?server=' . $source . '&type=url&id=' . $song->url_id,
+                'url'    => API_URI . '?server=' . $source . '&type=url&id=' . $song->url_id,
                 'cover'  => json_decode($api->pic($song->pic_id))->url,
-                'lrc'    => $API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
             );
             echo json_encode($msg);
             break;
