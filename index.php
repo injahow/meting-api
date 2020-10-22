@@ -11,8 +11,8 @@ if (!isset($_GET['type']) || !isset($_GET['id'])) {
 }
 
 $server = isset($_GET['server']) ? $_GET['server'] : 'netease';
-$type =  $_GET['type'];
-$id =  $_GET['id'];
+$type = $_GET['type'];
+$id = $_GET['id'];
 
 // 数据格式
 header('Content-type: application/json; charset=UTF-8;');
