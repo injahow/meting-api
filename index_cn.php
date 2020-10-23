@@ -89,13 +89,16 @@ if ($type == 'playlist') {
              */
             $lrc_arr = explode("\n", $lrc_data->lyric);
             $lrc_cn_arr = explode("\n", $lrc_data->tlyric);
-            foreach ($lrc_cn_arr as $k => $v) {
-                $lrc_cn_arr2[$k] = explode(']', $v);
+            $lrc_cn_arr2 = array();
+            foreach ($lrc_cn_arr as $i => $v) {
+                if ($v == '') continue;
+                $lrc_cn_arr2[$i] = explode(']', $v);
+                unset($lrc_cn_arr[$i]);
             }
             foreach ($lrc_arr as $i => $i_v) {
-                $lrc_arr2[$i] = explode(']', $i_v);
+                $lrc_arr_key = explode(']', $i_v)[0];
                 foreach ($lrc_cn_arr2 as $cn_i => $cn_v) {
-                    if ($cn_v[0] == $lrc_arr2[$i][0] && $cn_v[1] != '' && $cn_v[1] != '//') {
+                    if ($cn_v[0] == $lrc_arr_key && $cn_v[1] != '' && $cn_v[1] != '//') {
                         $lrc_arr[$i] .= '(' . $cn_v[1] . ')';
                         unset($lrc_cn_arr2[$cn_i]);
                     }
