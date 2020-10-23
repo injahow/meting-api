@@ -39,7 +39,6 @@ if ($type == 'playlist') {
     if (CACHE) {
         $file_name = __DIR__ . '/cache/playlist/' . $server . '_' . $id . '.json';
         if (file_exists($file_name)) {
-            // < 1 day
             if ($_SERVER['REQUEST_TIME'] - filectime($file_name) < CACHE_TIME) {
                 echo file_get_contents($file_name);
                 exit;
