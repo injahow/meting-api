@@ -46,7 +46,7 @@ if ($type == 'playlist') {
 
     $song = $api->song($id);
     if ($song == '[]') {
-        echo '{"error":"unknown id"}';
+        echo '{"error":"unknown song id"}';
         exit;
     }
 
