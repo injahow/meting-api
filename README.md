@@ -13,17 +13,17 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/injahow/meting-api.git
+$ git clone https://github.com/injahow/meting-api.git
 
-cd meting-api
+$ cd meting-api
 
 # 安装依赖
-composer install
+$ composer install
 
 # 或者使用中国镜像
-composer config -g repo.packagist composer https://packagist.phpcomposer.com
+$ composer config -g repo.packagist composer https://packagist.phpcomposer.com
 
-composer install
+$ composer install
 ```
 
 建议直接访问发布页面下载打包文件
