@@ -26,15 +26,22 @@ $ composer config -g repo.packagist composer https://packagist.phpcomposer.com
 $ composer install
 ```
 
-建议直接访问发布页面下载打包文件
+或者下载打包文件
 [https://github.com/injahow/meting-api/releases](https://github.com/injahow/meting-api/releases)
+
+或者直接使用 Meting.php
+
+```php
+// require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/src/Meting.php';
+```
 
 修改代码参数
 
 ```php
 <?php
 // 设置API路径
-define('API_URI', '你的api访问路径');
+define('API_URI', '你的API地址');
 // ...
 ```
 
