@@ -20,9 +20,9 @@ header('Content-type: application/json; charset=UTF-8;');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 
-require __DIR__ . '/vendor/autoload.php';
+// require __DIR__ . '/vendor/autoload.php';
 // you can use 'Meting.php' instead of 'autoload.php'
-// require __DIR__ . '/src/Meting.php';
+require __DIR__ . '/src/Meting.php';
 
 use Metowolf\Meting;
 
