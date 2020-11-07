@@ -29,7 +29,7 @@ $api->format(true);
 if ($type == 'playlist') {
     $data = $api->playlist($id);
     if ($data == '[]') {
-        echo '{"error":"unknown id"}';
+        echo '{"error":"unknown playlist id"}';
         exit;
     }
     $data = json_decode($data);
