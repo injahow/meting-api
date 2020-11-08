@@ -44,7 +44,7 @@ if ($type == 'playlist') {
     $lastid = $lastid == '' || $lastid == '0' ? $last_id + 1 : $lastid;
     $limit = $limit == '' ? 10 : $limit;
 
-    $playlist = array();
+    $playlist = [];
     foreach ($data as $song) {
 
         if ($last_id >= $lastid) {
@@ -84,7 +84,7 @@ if ($type == 'playlist') {
     $lastid = $lastid == '' || $lastid == '0' ? $last_id : $lastid;
     $limit = $limit == '' ? 10 : $limit;
 
-    $searchlist = array();
+    $searchlist = [];
 
     foreach ($data as $msg) {
 
@@ -133,7 +133,8 @@ if ($type == 'playlist') {
             break;
 
         case 'cover':
-            echo json_decode($api->pic($song->pic_id))->url;
+            $c_url = json_decode($api->pic($song->pic_id))->url;
+            header('Location: ' . $c_url);
             break;
 
         case 'lrc':

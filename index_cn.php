@@ -33,7 +33,7 @@ if ($type == 'playlist') {
         exit;
     }
     $data = json_decode($data);
-    $playlist = array();
+    $playlist = [];
     foreach ($data as $song) {
         $playlist[] = array(
             'name'   => $song->name,
@@ -72,7 +72,8 @@ if ($type == 'playlist') {
             break;
 
         case 'cover':
-            echo json_decode($api->pic($song->pic_id))->url;
+            $c_url = json_decode($api->pic($song->pic_id))->url;
+            header('Location: ' . $c_url);
             break;
 
         case 'lrc':
@@ -91,7 +92,7 @@ if ($type == 'playlist') {
              */
             $lrc_arr = explode("\n", $lrc_data->lyric);
             $lrc_cn_arr = explode("\n", $lrc_data->tlyric);
-            $lrc_cn_arr2 = array();
+            $lrc_cn_arr2 = [];
             foreach ($lrc_cn_arr as $i => $v) {
                 if ($v == '') continue;
                 $lrc_cn_arr2[$i] = explode(']', $v);

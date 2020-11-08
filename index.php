@@ -4,8 +4,8 @@ define('API_URI', 'https://api.injahow.cn/meting/');
 // 设置文件缓存及时间
 define('CACHE', false);
 define('CACHE_TIME', 86400);
-// 设置AUTH密钥
-define('AUTH', false);
+// 设置AUTH密钥-更改'meting-secret'
+define('AUTH', true);
 define('AUTH_SECRET', 'meting-secret');
 
 function auth($name)
@@ -76,7 +76,7 @@ if ($type == 'playlist') {
         exit;
     }
     $data = json_decode($data);
-    $playlist = array();
+    $playlist = [];
     foreach ($data as $song) {
         $playlist[] = array(
             'name'   => $song->name,
@@ -121,7 +121,8 @@ if ($type == 'playlist') {
             break;
 
         case 'cover':
-            echo json_decode($api->pic($song->pic_id))->url;
+            $c_url = json_decode($api->pic($song->pic_id))->url;
+            header('Location: ' . $c_url);
             break;
 
         case 'lrc':
