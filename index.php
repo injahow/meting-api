@@ -1,9 +1,17 @@
 <?php
 // 设置API路径
 define('API_URI', 'https://api.injahow.cn/meting/');
-// 设置缓存及时间
-define('CACHE', true);
-define('CACHE_TIME', 86400); //86400s = 1 day
+// 设置文件缓存及时间
+define('CACHE', false);
+define('CACHE_TIME', 86400);
+// 设置AUTH密钥
+define('AUTH', false);
+define('AUTH_SECRET', 'meting-secret');
+
+function auth($name)
+{
+    return hash_hmac('sha1', $name, AUTH_SECRET);
+}
 
 if (!isset($_GET['type']) || !isset($_GET['id'])) {
     include __DIR__ . '/public/index.html';
@@ -14,8 +22,23 @@ $server = isset($_GET['server']) ? $_GET['server'] : 'netease';
 $type = $_GET['type'];
 $id = $_GET['id'];
 
+if (AUTH) {
+    $auth = isset($_GET['auth']) ? $_GET['auth'] : '';
+    if (in_array($type, ['lrc', 'url'])) {
+        if ($auth == '' || $auth != auth($server . $type . $id)) {
+            http_response_code(403);
+            exit;
+        }
+    }
+}
+
 // 数据格式
-header('Content-type: application/json; charset=UTF-8;');
+if (in_array($type, ['song', 'playlist'])) {
+    header('content-type: application/json; charset=utf-8;');
+} elseif (in_array($type, ['lrc'])) {
+    header('content-type: text/plain; charset=utf-8;');
+}
+
 // 允许跨站
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
@@ -37,7 +60,6 @@ if ($server == 'netease') {
 
 if ($type == 'playlist') {
 
-    // 设置缓存
     if (CACHE) {
         $file_name = __DIR__ . '/cache/playlist/' . $server . '_' . $id . '.json';
         if (file_exists($file_name)) {
@@ -59,13 +81,13 @@ if ($type == 'playlist') {
         $playlist[] = array(
             'name'   => $song->name,
             'artist' => implode('/', $song->artist),
-            'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id,
+            'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'url' . $song->url_id) : ''),
             'cover'  => json_decode($api->pic($song->pic_id))->url,
-            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->lyric_id) : '')
         );
     }
     $playlist = json_encode($playlist);
-    // 设置缓存
+
     if (CACHE) {
         // ! mkdir /cache/playlist
         file_put_contents($file_name, $playlist);
@@ -92,7 +114,7 @@ if ($type == 'playlist') {
 
         case 'url':
             $m_url = json_decode($api->url($song->url_id))->url;
-            if ($m_url[4] != 's') { // 改https
+            if ($m_url[4] != 's') {
                 $m_url = str_replace('http', 'https', $m_url);
             }
             header('Location: ' . $m_url);
@@ -111,14 +133,14 @@ if ($type == 'playlist') {
             break;
 
         case 'single':
-            $msg = array(
+            $single = array(
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
-                'url'    => API_URI . '?server=' . $source . '&type=url&id=' . $song->url_id,
+                'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'url' . $song->url_id) : ''),
                 'cover'  => json_decode($api->pic($song->pic_id))->url,
-                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id
+                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->lyric_id) : '')
             );
-            echo json_encode($msg);
+            echo json_encode($single);
             break;
 
         default:
