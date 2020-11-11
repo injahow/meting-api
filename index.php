@@ -1,6 +1,8 @@
 <?php
 // 设置API路径
 define('API_URI', 'https://api.injahow.cn/meting/');
+// 设置中文歌词
+define('LYRIC_CN', true);
 // 设置文件缓存及时间
 define('CACHE', false);
 define('CACHE_TIME', 86400);
@@ -61,10 +63,10 @@ if ($server == 'netease') {
 if ($type == 'playlist') {
 
     if (CACHE) {
-        $file_name = __DIR__ . '/cache/playlist/' . $server . '_' . $id . '.json';
-        if (file_exists($file_name)) {
-            if ($_SERVER['REQUEST_TIME'] - filectime($file_name) < CACHE_TIME) {
-                echo file_get_contents($file_name);
+        $file_path = __DIR__ . '/cache/playlist/' . $server . '_' . $id . '.json';
+        if (file_exists($file_path)) {
+            if ($_SERVER['REQUEST_TIME'] - filectime($file_path) < CACHE_TIME) {
+                echo file_get_contents($file_path);
                 exit;
             }
         }
@@ -90,7 +92,7 @@ if ($type == 'playlist') {
 
     if (CACHE) {
         // ! mkdir /cache/playlist
-        file_put_contents($file_name, $playlist);
+        file_put_contents($file_path, $playlist);
     }
     echo $playlist;
 } else {
@@ -126,11 +128,40 @@ if ($type == 'playlist') {
             break;
 
         case 'lrc':
-            $lrc = json_decode($api->lyric($song->lyric_id))->lyric;
-            if ($lrc == '') {
-                $lrc = '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
+            $lrc_data = json_decode($api->lyric($song->lyric_id));
+            if ($lrc_data->lyric == '') {
+                echo '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
+                exit;
             }
-            echo $lrc;
+            if ($lrc_data->tlyric == '') {
+                echo $lrc_data->lyric;
+                exit;
+            }
+
+            if (LYRIC_CN) {
+                $lrc_arr = explode("\n", $lrc_data->lyric);
+                $lrc_cn_arr = explode("\n", $lrc_data->tlyric);
+                $lrc_cn_arr2 = [];
+                foreach ($lrc_cn_arr as $i => $v) {
+                    if ($v == '') continue;
+                    $lrc_cn_arr2[$i] = explode(']', $v);
+                    unset($lrc_cn_arr[$i]);
+                }
+                foreach ($lrc_arr as $i => $i_v) {
+                    $lrc_arr_key = explode(']', $i_v)[0];
+                    foreach ($lrc_cn_arr2 as $cn_i => $cn_v) {
+                        if ($cn_v[0] == $lrc_arr_key && $cn_v[1] != '' && $cn_v[1] != '//') {
+                            $lrc_arr[$i] .= ' (' . $cn_v[1] . ')';
+                            unset($lrc_cn_arr2[$cn_i]);
+                            break;
+                        }
+                    }
+                }
+                echo implode("\n", $lrc_arr);
+                exit;
+            }
+
+            echo $lrc_data->lyric;
             break;
 
         case 'single':
