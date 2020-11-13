@@ -7,7 +7,7 @@ define('LYRIC_CN', true);
 define('CACHE', false);
 define('CACHE_TIME', 86400);
 // 设置AUTH密钥-更改'meting-secret'
-define('AUTH', true);
+define('AUTH', false);
 define('AUTH_SECRET', 'meting-secret');
 
 function auth($name)
@@ -26,7 +26,7 @@ $id = $_GET['id'];
 
 if (AUTH) {
     $auth = isset($_GET['auth']) ? $_GET['auth'] : '';
-    if (in_array($type, ['lrc', 'url'])) {
+    if (in_array($type, ['url', 'cover', 'lrc'])) {
         if ($auth == '' || $auth != auth($server . $type . $id)) {
             http_response_code(403);
             exit;
@@ -84,8 +84,8 @@ if ($type == 'playlist') {
             'name'   => $song->name,
             'artist' => implode('/', $song->artist),
             'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'url' . $song->url_id) : ''),
-            'cover'  => json_decode($api->pic($song->pic_id))->url,
-            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->lyric_id) : '')
+            'cover'  => API_URI . '?server=' . $song->source . '&type=cover&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'cover' . $song->url_id) : ''),
+            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->url_id) : '')
         );
     }
     $playlist = json_encode($playlist);
@@ -115,7 +115,7 @@ if ($type == 'playlist') {
             break;
 
         case 'url':
-            $m_url = json_decode($api->url($song->url_id))->url;
+            $m_url = json_decode($api->url($song->url_id, 320))->url;
             if ($m_url[4] != 's') {
                 $m_url = str_replace('http', 'https', $m_url);
             }
@@ -123,7 +123,7 @@ if ($type == 'playlist') {
             break;
 
         case 'cover':
-            $c_url = json_decode($api->pic($song->pic_id))->url;
+            $c_url = json_decode($api->pic($song->pic_id, 90))->url;
             header('Location: ' . $c_url);
             break;
 
@@ -168,8 +168,8 @@ if ($type == 'playlist') {
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
                 'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'url' . $song->url_id) : ''),
-                'cover'  => json_decode($api->pic($song->pic_id))->url,
-                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->lyric_id) : '')
+                'cover'  => API_URI . '?server=' . $song->source . '&type=cover&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'cover' . $song->url_id) : ''),
+                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->url_id) : '')
             );
             echo json_encode($single);
             break;
