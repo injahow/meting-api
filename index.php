@@ -141,20 +141,19 @@ if ($type == 'playlist') {
             if (LYRIC_CN) {
                 $lrc_arr = explode("\n", $lrc_data->lyric);
                 $lrc_cn_arr = explode("\n", $lrc_data->tlyric);
-                $lrc_cn_arr2 = [];
+                $lrc_cn_map = [];
                 foreach ($lrc_cn_arr as $i => $v) {
                     if ($v == '') continue;
-                    $lrc_cn_arr2[$i] = explode(']', $v);
+                    $line = explode(']', $v);
+                    $lrc_cn_map[$line[0]] = $line[1];
                     unset($lrc_cn_arr[$i]);
                 }
-                foreach ($lrc_arr as $i => $i_v) {
-                    $lrc_arr_key = explode(']', $i_v)[0];
-                    foreach ($lrc_cn_arr2 as $cn_i => $cn_v) {
-                        if ($cn_v[0] == $lrc_arr_key && $cn_v[1] != '' && $cn_v[1] != '//') {
-                            $lrc_arr[$i] .= ' (' . $cn_v[1] . ')';
-                            unset($lrc_cn_arr2[$cn_i]);
-                            break;
-                        }
+                foreach ($lrc_arr as $i => $v) {
+                    if ($v == '') continue;
+                    $key = explode(']', $v)[0];
+                    if (!empty($lrc_cn_map[$key]) && $lrc_cn_map[$key] != '//') {
+                        $lrc_arr[$i] .= ' (' . $lrc_cn_map[$key] . ')';
+                        unset($lrc_cn_map[$key]);
                     }
                 }
                 echo implode("\n", $lrc_arr);
