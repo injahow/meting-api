@@ -126,6 +126,9 @@ if ($type == 'playlist') {
 
         case 'url':
             $m_url = json_decode($api->url($song->url_id))->url;
+            if ($m_url == '') {
+                exit;
+            }
             if ($m_url[4] != 's') { // 改https
                 $m_url = str_replace('http', 'https', $m_url);
             }
@@ -134,6 +137,9 @@ if ($type == 'playlist') {
 
         case 'cover':
             $c_url = json_decode($api->pic($song->pic_id))->url;
+            if ($c_url == '') {
+                exit;
+            }
             header('Location: ' . $c_url);
             break;
 
