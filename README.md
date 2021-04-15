@@ -49,7 +49,7 @@ define('API_URI', '你的API地址');
 
 API-Demo:
 
-- [https://api.injahow.cn/meting/?type=url&id=427139429](https://api.injahow.cn/meting/?type=url&id=427139429)
+- [https://api.injahow.cn/meting/?type=url&id=416892104](https://api.injahow.cn/meting/?type=url&id=416892104)
 - [https://api.injahow.cn/meting/?type=single&id=591321](https://api.injahow.cn/meting/?type=single&id=591321)
 - [https://api.injahow.cn/meting/?type=playlist&id=2619366284](https://api.injahow.cn/meting/?type=playlist&id=2619366284)
 
