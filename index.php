@@ -100,7 +100,7 @@ if ($type == 'playlist') {
     }
 
     if (APCU_CACHE) {
-        $apcu_time = $type == 'url' ? 1800 : 7200;
+        $apcu_time = $type == 'url' ? 600 : 36000;
         $apcu_key = $server . $type . $id;
         if (apcu_exists($apcu_key)) {
             $data = apcu_fetch($apcu_key);
