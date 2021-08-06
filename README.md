@@ -40,9 +40,20 @@ require __DIR__ . '/src/Meting.php';
 
 ```php
 <?php
-// 设置API路径
-define('API_URI', '你的API地址');
-// ...
+// 设置API路径（可默认）
+define('API_URI', api_uri());
+// 设置中文歌词
+define('TLYRIC', true);
+// 设置歌单文件缓存及时间
+define('CACHE', false);
+define('CACHE_TIME', 86400);
+// 设置短期缓存-需要安装apcu
+define('APCU_CACHE', false);
+// 设置AUTH密钥-更改'meting-secret'
+define('AUTH', false);
+define('AUTH_SECRET', 'meting-secret');
+
+......
 ```
 
 ## Demo
