@@ -26,14 +26,13 @@ $ composer config -g repo.packagist composer https://packagist.phpcomposer.com
 $ composer install
 ```
 
-或者下载打包文件
-[https://github.com/injahow/meting-api/releases](https://github.com/injahow/meting-api/releases)
+或者下载打包文件[https://github.com/injahow/meting-api/releases](https://github.com/injahow/meting-api/releases)
 
 或者直接使用 Meting.php
 
 ```php
-// require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/src/Meting.php';
+// include __DIR__ . '/vendor/autoload.php';
+include __DIR__ . '/src/Meting.php';
 ```
 
 修改代码参数
