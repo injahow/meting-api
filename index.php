@@ -12,11 +12,6 @@ define('APCU_CACHE', false);
 define('AUTH', false);
 define('AUTH_SECRET', 'meting-secret');
 
-function auth($name)
-{
-    return hash_hmac('sha1', $name, AUTH_SECRET);
-}
-
 if (!isset($_GET['type']) || !isset($_GET['id'])) {
     include __DIR__ . '/public/index.html';
     exit;
@@ -99,14 +94,20 @@ if ($type == 'playlist') {
     echo $playlist;
 } else {
 
+    if (!in_array($type, ['name', 'artist', 'url', 'cover', 'lrc', 'single'])) {
+        echo '{"error":"unknown type"}';
+        exit;
+    }
+
     if (APCU_CACHE) {
         $apcu_time = $type == 'url' ? 1800 : 7200;
         $apcu_key = $server . $type . $id;
         if (apcu_exists($apcu_key)) {
+            $data = apcu_fetch($apcu_key);
             if (in_array($type, ['url', 'cover'])) {
-                header('Location: ' . apcu_fetch($apcu_key));
+                header('Location: ' . $data);
             } else {
-                echo apcu_fetch($apcu_key);
+                echo $data;
             }
             exit;
         }
@@ -129,26 +130,33 @@ if ($type == 'playlist') {
         apcu_store($song_apcu_key, $song, $apcu_time);
     }
 
-    $song = json_decode($song)[0];
+    $data = song2data($api, json_decode($song)[0], $type);
 
+    if (APCU_CACHE) {
+        apcu_store($apcu_key, $data, $apcu_time);
+    }
+
+    if (in_array($type, ['url', 'cover'])) {
+        header('Location: ' . $data);
+    } else {
+        echo $data;
+    }
+}
+
+function auth($name)
+{
+    return hash_hmac('sha1', $name, AUTH_SECRET);
+}
+
+function song2data($api, $song, $type)
+{
     switch ($type) {
         case 'name':
-
-            if (APCU_CACHE) {
-                apcu_store($apcu_key, $song->name, $apcu_time);
-            }
-
-            echo $song->name;
+            return $song->name;
             break;
 
         case 'artist':
-            $artist = implode('/', $song->artist);
-
-            if (APCU_CACHE) {
-                apcu_store($apcu_key, $artist, $apcu_time);
-            }
-
-            echo $artist;
+            return implode('/', $song->artist);
             break;
 
         case 'url':
@@ -160,11 +168,7 @@ if ($type == 'playlist') {
                 $m_url = str_replace('http', 'https', $m_url);
             }
 
-            if (APCU_CACHE) {
-                apcu_store($apcu_key, $m_url, $apcu_time);
-            }
-
-            header('Location: ' . $m_url);
+            return $m_url;
             break;
 
         case 'cover':
@@ -173,11 +177,7 @@ if ($type == 'playlist') {
                 exit;
             }
 
-            if (APCU_CACHE) {
-                apcu_store($apcu_key, $c_url, $apcu_time);
-            }
-
-            header('Location: ' . $c_url);
+            return $c_url;
             break;
 
         case 'lrc':
@@ -209,30 +209,17 @@ if ($type == 'playlist') {
                 $lrc = $lrc_data->lyric;
             }
 
-            if (APCU_CACHE) {
-                apcu_store($apcu_key, $lrc, $apcu_time);
-            }
-
-            echo $lrc;
+            return $lrc;
             break;
 
         case 'single':
-            $single = json_encode(array(
+            return json_encode(array(
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
                 'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'url' . $song->url_id) : ''),
                 'cover'  => API_URI . '?server=' . $song->source . '&type=cover&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'cover' . $song->url_id) : ''),
                 'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->lyric_id) : '')
             ));
-
-            if (APCU_CACHE) {
-                apcu_store($apcu_key, $single, $apcu_time);
-            }
-
-            echo $single;
             break;
-
-        default:
-            echo '{"error":"unknown type"}';
     }
 }
