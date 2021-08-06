@@ -2,10 +2,12 @@
 // 设置API路径
 define('API_URI', 'https://api.injahow.cn/meting/');
 // 设置中文歌词
-define('LYRIC_CN', true);
-// 设置文件缓存及时间
+define('TLYRIC', true);
+// 设置歌单文件缓存及时间
 define('CACHE', false);
 define('CACHE_TIME', 86400);
+// 设置短期缓存-需要安装apcu
+define('APCU_CACHE', false);
 // 设置AUTH密钥-更改'meting-secret'
 define('AUTH', false);
 define('AUTH_SECRET', 'meting-secret');
@@ -35,9 +37,9 @@ if (AUTH) {
 }
 
 // 数据格式
-if (in_array($type, ['song', 'playlist'])) {
+if (in_array($type, ['single', 'playlist'])) {
     header('content-type: application/json; charset=utf-8;');
-} elseif (in_array($type, ['lrc'])) {
+} else if (in_array($type, ['lrc'])) {
     header('content-type: text/plain; charset=utf-8;');
 }
 
@@ -55,8 +57,7 @@ $api = new Meting($server);
 $api->format(true);
 
 // 设置cookie
-/*
-if ($server == 'netease') {
+/*if ($server == 'netease') {
     $api->cookie('os=pc; osver=Microsoft-Windows-10-Professional-build-10586-64bit; appver=2.0.3.131777; channel=netease; MUSIC_U=****** ; __remember_me=true');
 }*/
 
@@ -85,7 +86,7 @@ if ($type == 'playlist') {
             'artist' => implode('/', $song->artist),
             'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'url' . $song->url_id) : ''),
             'cover'  => API_URI . '?server=' . $song->source . '&type=cover&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'cover' . $song->url_id) : ''),
-            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->url_id) : '')
+            'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->lyric_id) : '')
         );
     }
     $playlist = json_encode($playlist);
@@ -94,24 +95,60 @@ if ($type == 'playlist') {
         // ! mkdir /cache/playlist
         file_put_contents($file_path, $playlist);
     }
+
     echo $playlist;
 } else {
 
-    $song = $api->song($id);
+    if (APCU_CACHE) {
+        $apcu_time = $type == 'url' ? 1800 : 7200;
+        $apcu_key = $server . $type . $id;
+        if (apcu_exists($apcu_key)) {
+            if (in_array($type, ['url', 'cover'])) {
+                header('Location: ' . apcu_fetch($apcu_key));
+            } else {
+                echo apcu_fetch($apcu_key);
+            }
+            exit;
+        }
+
+        $song_apcu_key = $server . 'song' . $id;
+        if (apcu_exists($song_apcu_key)) {
+            $song = apcu_fetch($song_apcu_key);
+        }
+    }
+
+    if (!isset($song)) {
+        $song = $api->song($id);
+    }
     if ($song == '[]') {
         echo '{"error":"unknown song id"}';
         exit;
+    }
+
+    if (APCU_CACHE) {
+        apcu_store($song_apcu_key, $song, $apcu_time);
     }
 
     $song = json_decode($song)[0];
 
     switch ($type) {
         case 'name':
+
+            if (APCU_CACHE) {
+                apcu_store($apcu_key, $song->name, $apcu_time);
+            }
+
             echo $song->name;
             break;
 
         case 'artist':
-            echo implode('/', $song->artist);
+            $artist = implode('/', $song->artist);
+
+            if (APCU_CACHE) {
+                apcu_store($apcu_key, $artist, $apcu_time);
+            }
+
+            echo $artist;
             break;
 
         case 'url':
@@ -122,6 +159,11 @@ if ($type == 'playlist') {
             if ($m_url[4] != 's') {
                 $m_url = str_replace('http', 'https', $m_url);
             }
+
+            if (APCU_CACHE) {
+                apcu_store($apcu_key, $m_url, $apcu_time);
+            }
+
             header('Location: ' . $m_url);
             break;
 
@@ -130,21 +172,21 @@ if ($type == 'playlist') {
             if ($c_url == '') {
                 exit;
             }
+
+            if (APCU_CACHE) {
+                apcu_store($apcu_key, $c_url, $apcu_time);
+            }
+
             header('Location: ' . $c_url);
             break;
 
         case 'lrc':
             $lrc_data = json_decode($api->lyric($song->lyric_id));
             if ($lrc_data->lyric == '') {
-                echo '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
-                exit;
-            }
-            if ($lrc_data->tlyric == '') {
-                echo $lrc_data->lyric;
-                exit;
-            }
-
-            if (LYRIC_CN) {
+                $lrc = '[00:00.00]这似乎是一首纯音乐呢，请尽情欣赏它吧！';
+            } else if ($lrc_data->tlyric == '') {
+                $lrc = $lrc_data->lyric;
+            } else if (TLYRIC) { // lyric_cn
                 $lrc_arr = explode("\n", $lrc_data->lyric);
                 $lrc_cn_arr = explode("\n", $lrc_data->tlyric);
                 $lrc_cn_map = [];
@@ -162,22 +204,32 @@ if ($type == 'playlist') {
                         unset($lrc_cn_map[$key]);
                     }
                 }
-                echo implode("\n", $lrc_arr);
-                exit;
+                $lrc = implode("\n", $lrc_arr);
+            } else {
+                $lrc = $lrc_data->lyric;
             }
 
-            echo $lrc_data->lyric;
+            if (APCU_CACHE) {
+                apcu_store($apcu_key, $lrc, $apcu_time);
+            }
+
+            echo $lrc;
             break;
 
         case 'single':
-            $single = array(
+            $single = json_encode(array(
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
                 'url'    => API_URI . '?server=' . $song->source . '&type=url&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'url' . $song->url_id) : ''),
                 'cover'  => API_URI . '?server=' . $song->source . '&type=cover&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'cover' . $song->url_id) : ''),
-                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->url_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->url_id) : '')
-            );
-            echo json_encode($single);
+                'lrc'    => API_URI . '?server=' . $song->source . '&type=lrc&id=' . $song->lyric_id . (AUTH ? '&auth=' . auth($song->source . 'lrc' . $song->lyric_id) : '')
+            ));
+
+            if (APCU_CACHE) {
+                apcu_store($apcu_key, $single, $apcu_time);
+            }
+
+            echo $single;
             break;
 
         default:
