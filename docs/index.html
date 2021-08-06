@@ -26,7 +26,7 @@
     }
   }
   playlist_id = playlist_id || '2619366284'
-  var meting_api = 'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r'
+  window.meting_api = 'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r'
   document.getElementById('meting_js').innerHTML = '<meting-js server="netease" type="playlist" id="' + playlist_id + '" order="list"></meting-js>'
 </script>
 
