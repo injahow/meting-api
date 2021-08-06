@@ -1,6 +1,6 @@
 <?php
 // 设置API路径
-define('API_URI', 'https://api.injahow.cn/meting/');
+define('API_URI', api_uri());
 // 设置中文歌词
 define('TLYRIC', true);
 // 设置歌单文件缓存及时间
@@ -42,9 +42,9 @@ if (in_array($type, ['single', 'playlist'])) {
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 
-// require __DIR__ . '/vendor/autoload.php';
+// include __DIR__ . '/vendor/autoload.php';
 // you can use 'Meting.php' instead of 'autoload.php'
-require __DIR__ . '/src/Meting.php';
+include __DIR__ . '/src/Meting.php';
 
 use Metowolf\Meting;
 
@@ -143,6 +143,15 @@ if ($type == 'playlist') {
     }
 }
 
+function api_uri() // static
+{
+    if (isset($_SERVER['HTTPS'])) {
+        return 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    } else {
+        return 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    }
+}
+
 function auth($name)
 {
     return hash_hmac('sha1', $name, AUTH_SECRET);
@@ -152,10 +161,12 @@ function song2data($api, $song, $type)
 {
     switch ($type) {
         case 'name':
+
             return $song->name;
             break;
 
         case 'artist':
+
             return implode('/', $song->artist);
             break;
 
@@ -213,6 +224,7 @@ function song2data($api, $song, $type)
             break;
 
         case 'single':
+
             return json_encode(array(
                 'name'   => $song->name,
                 'artist' => implode('/', $song->artist),
