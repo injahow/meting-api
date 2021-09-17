@@ -74,7 +74,7 @@ if ($type == 'playlist') {
         exit;
     }
     $data = json_decode($data);
-    $playlist = [];
+    $playlist = array();
     foreach ($data as $song) {
         $playlist[] = array(
             'name'   => $song->name,
@@ -196,7 +196,7 @@ function song2data($api, $song, $type)
             } else if (TLYRIC) { // lyric_cn
                 $lrc_arr = explode("\n", $lrc_data->lyric);
                 $lrc_cn_arr = explode("\n", $lrc_data->tlyric);
-                $lrc_cn_map = [];
+                $lrc_cn_map = array();
                 foreach ($lrc_cn_arr as $i => $v) {
                     if ($v == '') continue;
                     $line = explode(']', $v, 2);
