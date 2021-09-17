@@ -199,13 +199,16 @@ function song2data($api, $song, $type)
                 $lrc_cn_map = [];
                 foreach ($lrc_cn_arr as $i => $v) {
                     if ($v == '') continue;
-                    $line = explode(']', $v);
+                    $line = explode(']', $v, 2);
+                    // 格式化处理
+                    $line[1] = preg_replace('/\s\s+/', ' ', $line[1]);
+                    $line[1] = trim($line[1]);
                     $lrc_cn_map[$line[0]] = $line[1];
                     unset($lrc_cn_arr[$i]);
                 }
                 foreach ($lrc_arr as $i => $v) {
                     if ($v == '') continue;
-                    $key = explode(']', $v)[0];
+                    $key = explode(']', $v, 2)[0];
                     if (!empty($lrc_cn_map[$key]) && $lrc_cn_map[$key] != '//') {
                         $lrc_arr[$i] .= ' (' . $lrc_cn_map[$key] . ')';
                         unset($lrc_cn_map[$key]);
