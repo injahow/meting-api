@@ -6,8 +6,8 @@
 
 ## Descriptions
 
-- 这是基于[Meting](https://github.com/metowolf/Meting)创建的 APlayer API
-- 灵感源于[https://api.fczbl.vip/163/](https://api.fczbl.vip/163/)
+- 这是基于 [Meting](https://github.com/metowolf/Meting) 创建的 APlayer API
+- 灵感源于 [https://api.fczbl.vip/163/](https://api.fczbl.vip/163/)
 
 ## Build Setup
 
