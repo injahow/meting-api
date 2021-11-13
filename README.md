@@ -8,6 +8,7 @@
 
 - 这是基于 [Meting](https://github.com/metowolf/Meting) 创建的 APlayer API
 - 灵感源于 [https://api.fczbl.vip/163/](https://api.fczbl.vip/163/)
+- 部分参考 [Meting-API](https://github.com/metowolf/Meting-API)
 
 ## Build Setup
 
@@ -60,7 +61,7 @@ define('AUTH_SECRET', 'meting-secret');
 API-Demo:
 
 - [https://api.injahow.cn/meting/?type=url&id=416892104](https://api.injahow.cn/meting/?type=url&id=416892104)
-- [https://api.injahow.cn/meting/?type=single&id=591321](https://api.injahow.cn/meting/?type=single&id=591321)
+- [https://api.injahow.cn/meting/?type=song&id=591321](https://api.injahow.cn/meting/?type=song&id=591321)
 - [https://api.injahow.cn/meting/?type=playlist&id=2619366284](https://api.injahow.cn/meting/?type=playlist&id=2619366284)
 
 APlayer-Demo:
