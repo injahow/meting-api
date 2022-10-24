@@ -61,7 +61,7 @@ if ($type == 'playlist') {
     if (CACHE) {
         $file_path = __DIR__ . '/cache/playlist/' . $server . '_' . $id . '.json';
         if (file_exists($file_path)) {
-            if ($_SERVER['REQUEST_TIME'] - filectime($file_path) < CACHE_TIME) {
+            if ($_SERVER['REQUEST_TIME'] - filemtime($file_path) < CACHE_TIME) {
                 echo file_get_contents($file_path);
                 exit;
             }
