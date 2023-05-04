@@ -1,6 +1,6 @@
 <?php
 // 设置API路径
-define('API_URI', api_uri());
+define('API_URI', '/meting-api');
 // 设置中文歌词
 define('TLYRIC', true);
 // 设置歌单文件缓存及时间
@@ -52,9 +52,9 @@ $api = new Meting($server);
 $api->format(true);
 
 // 设置cookie
-/*if ($server == 'netease') {
-    $api->cookie('os=pc; osver=Microsoft-Windows-10-Professional-build-10586-64bit; appver=2.0.3.131777; channel=netease; MUSIC_U=****** ; __remember_me=true');
-}*/
+if ($server == 'netease') {
+    $api->cookie(getenv('netease_cookie'));
+}
 
 if ($type == 'playlist') {
 
